@@ -32,16 +32,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         initConfigWindow(primaryStage);
-
-        buildScene1();
-        buildScene2(kindFoodList.get(0));
-        buildScene3();
-        buildScene4();
-        buildScene5();
-
-        //Initial Scene
-        window.setScene(scene1);
-        window.show();
     }
 
     private void buildScene5() {
@@ -57,11 +47,38 @@ public class Main extends Application {
         scene5 = new Scene(layoutScene, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
-    private void buildScene4() {
+    private void buildScene4(String food) {
+        //itens
+        Label label = new Label(food + " is _____ but not " + foodList.get(foodList.size() - 1));
+        TextField adjectiveFoodInput = new TextField();
+
+        Button buttonOK = new Button("OK");
+        buttonOK.setOnAction(e -> {
+            String adjective = adjectiveFoodInput.getText();
+            adjectiveFoodInput.setText("");
+            if (adjective == null || adjective.trim().isEmpty()) {
+                e.consume();
+                AlertBox.display("Atention!", "Type a answer before to click in OK.");
+            } else {
+                adjectiveFoodList.add(adjective);
+                window.setScene(scene1);
+            }
+        });
+        Button buttonCancel = new Button("Cancel");
+        buttonCancel.setOnAction(e -> {
+            adjectiveFoodInput.setText("");
+            window.setScene(scene1);
+        });
+
+        HBox layoutButtons = new HBox(BUTTONS_SPACING);
+        layoutButtons.getChildren().add(buttonOK);
+        layoutButtons.getChildren().add(buttonCancel);
+        layoutButtons.setAlignment(Pos.CENTER);
         //layout scene
         VBox layoutScene = new VBox(ITENS_SPACING);
-//        layoutScene.getChildren().add(label);
-//        layoutScene.getChildren().add(layoutButtons);
+        layoutScene.getChildren().add(label);
+        layoutScene.getChildren().add(adjectiveFoodInput);
+        layoutScene.getChildren().add(layoutButtons);
         layoutScene.setAlignment(Pos.CENTER);
 
         scene4 = new Scene(layoutScene, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -75,15 +92,19 @@ public class Main extends Application {
         Button buttonOK = new Button("OK");
         buttonOK.setOnAction(e -> {
             String food = foodInput.getText();
+            foodInput.setText("");
             if (food == null || food.trim().isEmpty()) {
                 e.consume();
                 AlertBox.display("Atention!", "Type a answer before to click in OK.");
+            } else {
+                buildScene4(food);
+                foodList.add(food);
+                window.setScene(scene4);
             }
-            foodList.add(food);
-            window.setScene(scene4);
         });
         Button buttonCancel = new Button("Cancel");
         buttonCancel.setOnAction(e -> {
+            foodInput.setText("");
             window.setScene(scene1);
         });
 
@@ -102,13 +123,13 @@ public class Main extends Application {
         scene3 = new Scene(layoutScene, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
-    private void buildScene2(String option) {
+    private void buildScene2(int index, String option) {
         //itens
         Label label = new Label("The dish you thought is " + option + "?");
         Button buttonYes = new Button("Yes");
         buttonYes.setOnAction(e -> {
-            // TODO: 06/04/2018 persist choice
-            window.setScene(scene1);
+            buildScene5();
+            window.setScene(scene5);
         });
         Button buttonNo = new Button("No");
         buttonNo.setOnAction(e -> {
@@ -129,7 +150,9 @@ public class Main extends Application {
         scene2 = new Scene(layoutScene, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
-    private void buildScene1() {
+    private void buildScene1(int index, String kindFood) {
+        buildScene2(index, kindFood);
+
         //itens
         Label label1 = new Label("Welcome to GourmetGame!");
         Label label2 = new Label("Think of a food you like...");
@@ -158,6 +181,14 @@ public class Main extends Application {
             e.consume();
             closeProgram();
         });
+
+        buildScene1(0, kindFoodList.get(0));
+        buildScene3();
+        buildScene5();
+
+        //Initial Scene
+        window.setScene(scene1);
+        window.show();
     }
 
     private void closeProgram() {
